@@ -9,6 +9,8 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+import requests
+
 app = Flask(__name__)
 
 # Check for environment variable
@@ -24,19 +26,79 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+@app.route("/login", methods = ['GET', 'POST '])
+def login():
+    session.clear()
+    username = request.form.get("username")
+
+    if request.method == "POST":
+        if not request.form.get("username"):
+            return render_template("error.html", message="Please enter the username")
+
+        elif not request.form.get("password"):
+            return render_template("error.html", message="Please enter the password")
+
+        # Access the database for users
+        rows = db.execute("SELECT * FROM USERS WHERE username = :username", {"username": username})
+
+        results = rows.fetchone()
+
+        # Be sure that the username exists and password in correct
+
+        # Be sure and save the user that has logged in
+
+        # Redirect user to home page
+
+    #If the user logged in using a link or via GET method redirect to the index page
+    else:
+        return render_template("index.html")
 
 @app.route("/")
 def index():
-    return render_template(index.html)
+    return render_template("index.html")
 
 @app.route("/register")
 def register():
-    return render_template(register.html)
+    session.clear()
+
+    # Ensure that the user doesn't try to register via GET
+    if request.method == "POST":
+        if not request.form.get("username"):
+            return render_template("error.html", message="Please enter the username")
+
+        if not request.form.get("password"):
+            return render_template("error.html", message="Please provide the pasword")
+
+            #Check if username already exists
+
+            #Confirmation of password was entered
+
+            #Confirmation of two passwords are equal
+
+            #Confirmation that the user has created an account (send a confirmation email)
+
+            # Hash password
+
+            # Insert register into database and commit changes
+
+            #Redirect user to login page for first login
+            return redirect("/login") #Diferencia entre redirect y render_template
+
+        else:
+            return render_template("register.html")
+
+
+@app.route("/search")
+def search():
+    #TODO
 
 @app.route("/login")
 def login():
-    return render_template(login.html)
+    return render_template("login.html")
 
 @app.route("/logout")
 def logout():
-    return render_template(logout.html)
+    #Forget the session
+    session.clear()
+    #Redirect to index.html
+    return render_template("index.html")

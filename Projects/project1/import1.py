@@ -17,7 +17,7 @@ def main():
         "INSERT INTO books (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)",
             {"isbn": isbn, "title": title, "author": author, "year": year}
             )
-        print(f"Added book number {isbn}")
+        print(f"Added book titled: {title}")
     db.commit()
 
 
