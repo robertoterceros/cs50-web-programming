@@ -64,7 +64,7 @@ def login():
 
     #If the user logged in using a link or via GET method redirect to the index page
     else:
-        return render_template("index.html")
+        return render_template("login.html")
 
 
 @app.route("/register") #DONE
