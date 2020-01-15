@@ -37,7 +37,6 @@ def index():
 @app.route("/login", methods = ['GET', 'POST'])
 def login():
     session.clear()
-    username = request.form.get("username")
 
     if request.method == "POST":
         if not request.form.get("username"):
@@ -47,13 +46,17 @@ def login():
             return render_template("error.html", message="Please enter the password")
 
         # Access the database for users
-        rows = db.execute("SELECT * FROM USERS WHERE name = :username", {"name": username})
+        username = request.form.get("username")
+        rows = db.execute("SELECT * FROM USERS WHERE name = :name", {"name": username})
 
         output = rows.fetchone()
 
-        # Be sure that the username exists and password in correct
-        if output == None or not chek_password_hash(result[2], request.form.get("password")):
+        # Be sure that the username exists
+        if output == None:
             return render_template("error.html", message="Username not found. Please enter a valid username.")
+        # Be sure that the password is correct
+        if not check_password_hash(output[3], request.form.get("password")):
+            return render_template("error.html", message="Incorrect password.")
 
         # Be sure and save the user that has logged in
         session["id_user"] = output[0]
