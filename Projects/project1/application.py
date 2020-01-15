@@ -5,7 +5,7 @@
 import os, json
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flask import Flask, render_template, request, session, jsonify, flash
+from flask import Flask, render_template, request, session, jsonify, flash, redirect
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -34,7 +34,7 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
     return render_template("index.html")
 
-@app.route("/login", methods = ['GET', 'POST '])
+@app.route("/login", methods = ['GET', 'POST'])
 def login():
     session.clear()
     username = request.form.get("username")
@@ -47,7 +47,7 @@ def login():
             return render_template("error.html", message="Please enter the password")
 
         # Access the database for users
-        rows = db.execute("SELECT * FROM USERS WHERE username = :username", {"username": username})
+        rows = db.execute("SELECT * FROM USERS WHERE name = :username", {"name": username})
 
         output = rows.fetchone()
 
@@ -67,7 +67,7 @@ def login():
         return render_template("login.html")
 
 
-@app.route("/register") #DONE
+@app.route("/register", methods=['POST', 'GET']) #Debe admitir ambos metodos
 def register():
     session.clear()
 
@@ -80,7 +80,7 @@ def register():
             return render_template("error.html", message="Please provide the pasword")
 
             #Check if username already exists
-        checkUser = db.execute("SELECT * FROM users WHERE username := username",
+        checkUser = db.execute("SELECT * FROM users WHERE name = :username",
         {"username":request.form.get("username")}).fetchone()
 
         if checkUser:
@@ -104,8 +104,8 @@ def register():
         hashedPassword = generate_password_hash(request.form.get("password"), method='pbkdf2:sha256', salt_length=8)
 
             # Insert register into database and commit changes
-        db.execute("INSERT INTO users (username, hash) VALUES (:username, :password)",
-        {'username':request.form.get('username'), 'password':hashedPassword})
+        db.execute("INSERT INTO users (name, email, password) VALUES (:username, :email, :password)",
+        {'username':request.form.get('username'), 'email':request.form.get('email'), 'password':hashedPassword})
 
             # Commit changes to database
         db.commit()
@@ -150,7 +150,7 @@ def book(isbn):
         comment = request.form.get("comment")
 
         #Search bok by ISBN
-        row = db.execute("SELECT id FROM books WHERE isbn= :isbn", {"isbn": isbn})
+        row = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn})
 
         #Save id into variable
         bookId = row.fetchone()
