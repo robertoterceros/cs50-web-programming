@@ -2,13 +2,13 @@
 # export FLASK_DEBUG=1
 # export DATABASE_URL=postgres://msmtdlmfgaqhfo:320fb2dc2c2b09e5833f0a0a07e2823d441d02a0a999803102abd1b09d5d239c@ec2-107-20-243-220.compute-1.amazonaws.com:5432/d66l8esu194f6u
 
-import os, json
-from werkzeug.security import check_password_hash, generate_password_hash
-
+import os
+import json
 from flask import Flask, render_template, request, session, jsonify, flash, redirect
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from werkzeug.security import check_password_hash, generate_password_hash
 
 import requests
 
@@ -113,6 +113,8 @@ def register():
             # Commit changes to database
         db.commit()
 
+        flash('Account created', 'info')
+
             #Redirect user to login page for first login
         return redirect("/login") #Diferencia entre redirect y render_template
 
@@ -120,16 +122,16 @@ def register():
         return render_template("register.html")
 
 
-@app.route("/search", methods=["GET"])
+@app.route("/search", methods=["POST", "GET"])
 @login_required
 def search():
-    if not requests.args.get("book"):
-        return render_template("error.html", message="Please enter the book")
+    if not request.form.get("book"):
+        return render_template("error.html", message="You must provide a book name")
 
-    query = "%" + request.args.get("book") + "%"
+    query = "%" + request.form.get("book") + "%"
     query = query.title()
 
-    rows = db.execute("SELECT isbn, title, author, year FROOM books WHERE isbn LIKE :query OR title LIKE :query OR author LIKE :query", {"query": query})
+    rows = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn LIKE :query OR title LIKE :query OR author LIKE :query", {"query": query})
 
     if rows.rowcount == 0:
         return render_template("error.html", message="We can't find any book with the description entered")
@@ -152,7 +154,7 @@ def book(isbn):
         rating = request.form.get("rating")
         comment = request.form.get("comment")
 
-        #Search bok by ISBN
+        #Search book by ISBN
         row = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn})
 
         #Save id into variable
