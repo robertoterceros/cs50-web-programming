@@ -5,7 +5,7 @@ def login_required(f):
     """ Decorates routes to require login """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
+        if session.get("id_user") is None:
             return redirect("/login")
         return f(*args, **kwargs)
     return decorated_function

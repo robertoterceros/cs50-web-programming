@@ -61,7 +61,7 @@ def login():
         if not check_password_hash(output[3], request.form.get("password")):
             return render_template("error.html", message="Incorrect password.")
 
-        # Be sure and save the user that has logged in
+        # Be sure and save the user that has logged in!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         session["id_user"] = output[0]
         session["name_user"] =  output[1]
 
@@ -126,7 +126,7 @@ def register():
 
 
 @app.route("/search", methods=['GET', 'POST'])
-#@login_required
+@login_required
 def search():
     if not request.args.get("book"):
         print("Hello")
