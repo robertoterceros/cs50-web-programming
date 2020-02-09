@@ -146,13 +146,13 @@ def search():
 
 
 @app.route("/book/<isbn>", methods=["POST", "GET"])
-@login_required
+#@login_required
 def book(isbn):
     """ Save user review and load same page with reviews updates. """
 
     if request.method == "POST":
 
-        user = session["id_user"]
+        #user = session["id_user"]
 
         #Fetch form data
         rating = request.form.get("rating")
@@ -192,11 +192,14 @@ def book(isbn):
         """ GOODREADS reviews"""
 
         # Read API key from env variable
-        key = os.getenv("GOODREADS_KEY")
+        #key = os.getenv("GOODREADS_KEY")
 
         #Query the api with key and ISBN as parameters
-        query = requests.get("https://www.goodreads.com/book/review_counts.json",
-        params={"key": key, "isbn": isbn})
+        #query = requests.get("https://www.goodreads.com/book/review_counts.json",
+        #params={"key": "pEhwApK0Hah2deHLG5Qjyg", "isbn": isbn})
+
+        query = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "pEhwApK0Hah2deHLG5Qjyg", "isbns": "9781632168146"})
+
 
         # Convert the response to json
         response = query.json()
@@ -217,18 +220,22 @@ def book(isbn):
         book = row.fetchone()
         book = book[0]
 
+
+
         # Fetch book reviews
-        results = db.execute("SELECT users.username, comment, rating, to_char(time, 'DD Mon YY - HH24:MI:SS') as time \
-        FROM users \
-        INNER JOIN reviews \
-        ON users.id = reviews.user_id \
-        WHERE book_id = :book \
-        ORDER BY time",
-        {"book", book})
+        #results = db.execute("SELECT users.username, comment, rating, to_char(time, 'DD Mon YY - HH24:MI:SS') as time \
+        #FROM users \
+        #INNER JOIN reviews \
+        #ON users.id = reviews.user_id \
+        #WHERE book_id = :book \
+        #ORDER BY time",
+        #{"book", book})
 
-    reviews = results.fetchall()
+        #reviews = results.fetchall()
 
-    return render_template("book.html", bookInfo = bookInfo, reviews = reviews)
+
+
+        return render_template("book.html", bookInfo = bookInfo)
 
 @app.route("/api/<isbn>", methods = ['GET'])
 @login_required

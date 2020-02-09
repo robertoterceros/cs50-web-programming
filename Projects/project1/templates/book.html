@@ -6,6 +6,7 @@
 
 {% block content %}
 
+
     <div class="row book-container">
         <div class="col-sm-4">
             <img src="http://covers.openlibrary.org/b/isbn/{{bookInfo[0]['isbn']}}-M.jpg" width="130px">
@@ -17,7 +18,6 @@
             <h5>ISBN-10: {{bookInfo[0]['isbn']}}</h5>
         </div>
 
-        <!--GOODREADS REVIEWS -->
         <div class="col-sm-4">
             <img class="mb-3" src="../static/goodreads.jpg" alt="Goodreads" width="200" height="45">
             <h5>Nº of Ratings: {{bookInfo[1]['work_ratings_count']}}</h5>
@@ -33,7 +33,6 @@
     <h5>Make your own review!</h5>
 
     <div>
-        <!-- REVIEW FORM -->
         <form method="POST" class="form-border">
             <div class="form-row">
                 <div class="form-group col-sm">
@@ -60,7 +59,6 @@
             </div>
         </form>
 
-        <!-- REVIEW LIST -->
         <div id="userReviews">
             <h2></h2>
             {% for review in reviews %}
@@ -78,4 +76,5 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}
