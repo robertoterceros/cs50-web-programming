@@ -1,6 +1,9 @@
 # export FLASK_APP=application.py
 # export FLASK_DEBUG=1
 # export DATABASE_URL=postgres://msmtdlmfgaqhfo:320fb2dc2c2b09e5833f0a0a07e2823d441d02a0a999803102abd1b09d5d239c@ec2-107-20-243-220.compute-1.amazonaws.com:5432/d66l8esu194f6u
+# Se detecto un problema con el login_required!!!!!!!!!!!!!!!!!!!!!!!
+
+
 
 import os
 import json
@@ -122,13 +125,14 @@ def register():
         return render_template("register.html")
 
 
-@app.route("/search", methods=["POST", "GET"])
-@login_required
+@app.route("/search", methods=['GET', 'POST'])
+#@login_required
 def search():
-    if not request.form.get("book"):
+    if not request.args.get("book"):
+        print("Hello")
         return render_template("error.html", message="You must provide a book name")
 
-    query = "%" + request.form.get("book") + "%"
+    query = "%" + request.args.get("book") + "%"
     query = query.title()
 
     rows = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn LIKE :query OR title LIKE :query OR author LIKE :query", {"query": query})
