@@ -158,6 +158,9 @@ def book(isbn):
         rating = request.form.get("rating")
         comment = request.form.get("comment")
 
+        # Convert to save into DB
+        rating = int(rating)
+
         #Search book by ISBN
         row = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn})
 
@@ -168,20 +171,20 @@ def book(isbn):
         row2 = db.execute("SELECT * FROM reviews WHERE userid = :userid AND bookid = :bookid",
             {"userid": user,
             "bookid": bookid})
+        userreview = row2.first()
+        print("RESULT: ", userreview)
 
-        if row2.rowcount == 1:
-            return redirect("/book/" + isbn)
+        if not userreview:
+            db.execute("INSERT INTO reviews (userid, bookid, comment, rating) VALUES (:userid, :bookid, :comment, :rating)",
+            {"userid": user,
+            "bookid": bookid,
+            "comment": comment,
+            "rating": rating})
 
-        # Convert to save into DB
-        rating = int(rating)
+            db.commit()
 
-        db.execute("INSERT INTO reviews (userid, bookid, comment, rating) VALUES (:userid, :bookid, :comment, :rating)",
-        {"userid": user,
-        "bookid": bookid,
-        "comment": comment,
-        "rating": rating})
-
-        db.commit()
+        else:
+            flash("You have already reviewed this book", "info")
 
         return redirect("/book/"+isbn)
     else:

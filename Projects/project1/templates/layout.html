@@ -29,12 +29,12 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-collapse collapse" id="navbarNavDropdown">
-            {% if session.user_id %}
+            {% if session.id_user %}
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Search</a></li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">{{ session.user_name }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">{{ session.name_user }}</a></li>
                     <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
                 </ul>
             {% else %}
@@ -58,7 +58,7 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
-      
+
       {% block content %}
       {% endblock %}
     </div>
