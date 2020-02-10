@@ -65,6 +65,9 @@ def login():
         session["id_user"] = output[0]
         session["name_user"] =  output[1]
 
+        flash(f'Sucessfully login for {request.form.get("username")}', 'success')
+
+
         # Redirect user to home page
         return redirect("/")
 
@@ -103,9 +106,6 @@ def register():
         elif not request.form.get("password") == request.form.get("password2"):
             return render_template("error.html", message="Password entered don't match")
 
-            #Confirmation that the user has created an account (send a confirmation email)
-
-
             # Hash password
         hashedPassword = generate_password_hash(request.form.get("password"), method='pbkdf2:sha256', salt_length=8)
 
@@ -116,7 +116,7 @@ def register():
             # Commit changes to database
         db.commit()
 
-        flash('Account created', 'info')
+        flash(f'Account created for {request.form.get("username")}', 'success')
 
             #Redirect user to login page for first login
         return redirect("/login") #Diferencia entre redirect y render_template

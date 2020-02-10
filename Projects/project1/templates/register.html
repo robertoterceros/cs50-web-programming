@@ -7,23 +7,30 @@
 {% block content %}
 
   <h3>Create your account</h3>
-  <form action="/register" method="post">
-    <div class="form-group">
-      <input autocomplete="off" autofocus class="form-control" name="username" placeholder="username" type="text" />
-    </div>
+  <div>
+    <form action="/register" method="post">
+      <div class="form-group">
+        <input autocomplete="off" autofocus class="form-control" name="username" placeholder="username" type="text" />
+      </div>
 
-    <div class="form-group">
-      <input autocomplete="off" autofocus class="form-control" name="email" placeholder="email" type="text" />
-    </div>
+      <div class="form-group">
+        <input autocomplete="off" autofocus class="form-control" name="email" placeholder="email" type="text" />
+      </div>
 
-    <div class="form-group">
-      <input class="form-control" name="password" placeholder="password" type="password" />
-    </div>
+      <div class="form-group">
+        <input class="form-control" name="password" placeholder="password" type="password" />
+      </div>
 
-    <div class="form-group">
-      <input class="form-control" name="password2" placeholder="Confirm your password" type="password" />
-    </div>
-    <button class="btn btn-primary" type="submit">Register</button>
-  </form>
+      <div class="form-group">
+        <input class="form-control" name="password2" placeholder="Confirm your password" type="password" />
+      </div>
+      <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+  </div>
+  <div class="border-top pt-3">
+    <small class="text-muted">
+      Already have an Account? <a class = "ml-2" href="{{ url_for('login') }}">Sign In</a>
+    </small>
+  </div>
 
 {% endblock %}
