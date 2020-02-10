@@ -9,7 +9,7 @@
 
     <div class="row book-container">
         <div class="col-sm-4">
-            <img src="http://covers.openlibrary.org/b/isbn/{{bookInfo[0]['isbn']}}-M.jpg" width="130px">
+            <img src="http://covers.openlibrary.org/b/isbn/{{bookInfo[0]['isbn']}}-M.jpg" width="220px">
         </div>
         <div class="col-sm-4">
             <h1>{{bookInfo[0]['title']}}</h1>
@@ -19,7 +19,7 @@
         </div>
 
         <div class="col-sm-4">
-            <img class="mb-3" src="../static/goodreads.jpg" alt="Goodreads" width="200" height="45">
+            <img class="mb-3" src="../static/goodreads.jpeg" alt="Goodreads" width="330" height="205">
             <h5>Nº of Ratings: {{bookInfo[1]['work_ratings_count']}}</h5>
             <h5>Average Rating: {{bookInfo[1]['average_rating']}}</h5>
             <h5>
@@ -65,7 +65,7 @@
             <div class="list-group">
                 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1" style="color:burlywood">{{review['username']}} said...</h6>
+                        <h6 class="mb-1" style="color:burlywood">{{review['name']}} said...</h6>
                         <small>{{review['time']}}</small>
                     </div>
                     <p class="mb-1">{{review['comment']}}</p>

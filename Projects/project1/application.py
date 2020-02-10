@@ -152,7 +152,7 @@ def book(isbn):
 
     if request.method == "POST":
 
-        #user = session["id_user"]
+        user = session["id_user"]
 
         #Fetch form data
         rating = request.form.get("rating")
@@ -162,12 +162,12 @@ def book(isbn):
         row = db.execute("SELECT id FROM books WHERE isbn = :isbn", {"isbn": isbn})
 
         #Save id into variable
-        bookId = row.fetchone()
-        bookId = bookId[0]
+        bookid = row.fetchone()
+        bookid = bookid[0]
 
-        row2 = db.execute("SELECT * FROM reviews WHERE id_user = :id_user AND book_id = :book_id",
-            {"id_user": user,
-            "book_id": bookId})
+        row2 = db.execute("SELECT * FROM reviews WHERE userid = :userid AND bookid = :bookid",
+            {"userid": user,
+            "bookid": bookid})
 
         if row2.rowcount == 1:
             return redirect("/book/" + isbn)
@@ -175,9 +175,9 @@ def book(isbn):
         # Convert to save into DB
         rating = int(rating)
 
-        db.execute("INSER INTO reviews (id_user, bookId, comment, rating) VALUES (:id_user, :bookId, :comment, :rating)",
-        {"id_user": user,
-        "bookId": bookId,
+        db.execute("INSERT INTO reviews (userid, bookid, comment, rating) VALUES (:userid, :bookid, :comment, :rating)",
+        {"userid": user,
+        "bookid": bookid,
         "comment": comment,
         "rating": rating})
 
@@ -190,14 +190,6 @@ def book(isbn):
         bookInfo = row.fetchall()
 
         """ GOODREADS reviews"""
-
-        # Read API key from env variable
-        #key = os.getenv("GOODREADS_KEY")
-
-        #Query the api with key and ISBN as parameters
-        #query = requests.get("https://www.goodreads.com/book/review_counts.json",
-        #params={"key": "pEhwApK0Hah2deHLG5Qjyg", "isbn": isbn})
-
         query = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "pEhwApK0Hah2deHLG5Qjyg", "isbns": "9781632168146"})
 
 
@@ -212,7 +204,7 @@ def book(isbn):
 
         """ Users reviews """
 
-        #Search book_id by isbn
+        #Search bookid by isbn
         row = db.execute("SELECT id FROM books WHERE isbn = :isbn",
             {"isbn": isbn})
 
@@ -223,19 +215,16 @@ def book(isbn):
 
 
         # Fetch book reviews
-        #results = db.execute("SELECT users.username, comment, rating, to_char(time, 'DD Mon YY - HH24:MI:SS') as time \
-        #FROM users \
-        #INNER JOIN reviews \
-        #ON users.id = reviews.user_id \
-        #WHERE book_id = :book \
-        #ORDER BY time",
-        #{"book", book})
+        results = db.execute("SELECT users.name, comment, rating \
+        FROM users \
+        INNER JOIN reviews \
+        ON users.id = reviews.userid \
+        WHERE bookid = :book",
+        {"book": book})
 
-        #reviews = results.fetchall()
+        reviews = results.fetchall()
 
-
-
-        return render_template("book.html", bookInfo = bookInfo)
+        return render_template("book.html", bookInfo = bookInfo, reviews=reviews)
 
 @app.route("/api/<isbn>", methods = ['GET'])
 @login_required
@@ -246,7 +235,7 @@ def api_call(isbn):
         AVG(reviews.rating) as average_score \
         FROM books \
         INNER JOIN reviews \
-        ON books.id = reviews.book_id \
+        ON books.id = reviews.bookid \
         WHERE isbn= :isbn \
         GROUP BY title, author, year, isbn",
         {"isbn": isbn})
