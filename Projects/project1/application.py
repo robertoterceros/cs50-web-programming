@@ -15,7 +15,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 import requests
 
-from helpers import login_required
+from helpers import login_required, get_review
 
 app = Flask(__name__)
 
@@ -226,35 +226,38 @@ def book(isbn):
 
         return render_template("book.html", bookInfo = bookInfo, reviews=reviews)
 
-@app.route("/api/<isbn>", methods = ['GET'])
-@login_required
+@app.route("/api/<isbn>")
+#@login_required
 def api_call(isbn):
+    # Para bordear el impedimento de isbn terminado en X se hace lo siguiente:
+    isbn2 = isbn
+    if isbn2[-1]=="X":
+        isbn2 = isbn2[:-1]
+    isbn2 = f"%{isbn2}%".lower()
+    check_isbn = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": isbn2}).fetchone()
+    if check_isbn is None:
+        return jsonify(
+            {
+                "error_code": 404,
+                "error_message": "Not Found",
+                "isbn": isbn
+            }
+        ), 404
 
-    row = db.execute("SELECT title, author, year, isbn, \
-        COUNT(reviews.id) as review_count, \
-        AVG(reviews.rating) as average_score \
-        FROM books \
-        INNER JOIN reviews \
-        ON books.id = reviews.bookid \
-        WHERE isbn= :isbn \
-        GROUP BY title, author, year, isbn",
-        {"isbn": isbn})
+    else:
+        # Get info from the books table and then add isbn again
+        result = db.execute("SELECT title, author, year FROM books WHERE isbn LIKE :isbn", {"isbn": isbn2}).fetchone()
+        book_data = dict(result)
+        book_data['isbn'] = isbn
 
-    #Error checking
-    if row.rowcount != 1:
-        return jsonify({"Error": "Invalid book ISBN"}), 422
+        #Query Goodreads API for data on book ratings
 
-    # Fetch results from RowProxy
-    tmp = row.fetchone()
+        gr_reviews_count, gr_average_rating = get_review(isbn)
 
-    #Convert to dict
-    result = dict(tmp.items())
+        book_data['review_count'] = gr_reviews_count
+        book_data['average_score'] = float(gr_average_rating)
 
-    #Round AVG Score to 2 decimal
-    result['average_score'] = float('%.2f'%(result['average_score']))
-
-    return jsonify(result)
-
+        return jsonify(book_data)
 
 
 @app.route("/logout")

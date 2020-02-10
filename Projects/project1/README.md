@@ -13,3 +13,4 @@ export DATABASE_URL=postgres://msmtdlmfgaqhfo:320fb2dc2c2b09e5833f0a0a07e2823d44
 2)Falta cambiar el estilo con bootstrap
 3) Anuncios de validacion con flash
 4) Al login asegurarse que el correo sea correcto y todo lo demas
+5) Cuando estoy logeado ya no ver Register y Login. Sino Logout y nombre de usuario
